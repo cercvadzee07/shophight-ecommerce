@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, Suspense } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import Link from "next/link";
 import {
@@ -80,11 +80,7 @@ const MOCK_PRODUCTS = [
   },
 ];
 
-export default function ProductDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+function ProductContent({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const productId = parseInt(resolvedParams.id);
   const product = MOCK_PRODUCTS.find((p) => p.id === productId);
@@ -211,5 +207,21 @@ export default function ProductDetailPage({
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <div className="text-center py-20 text-white">იტვირთება...</div>
+      }
+    >
+      <ProductContent params={params} />
+    </Suspense>
   );
 }
