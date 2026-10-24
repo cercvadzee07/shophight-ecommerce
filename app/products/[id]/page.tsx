@@ -1,6 +1,7 @@
 "use client";
 
 export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 import { use, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
@@ -126,7 +127,6 @@ export default function ProductDetailPage({
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-        {/* Product Image - Left Side (7 columns) */}
         <div className="lg:col-span-7 bg-[#24283b] rounded-3xl overflow-hidden border border-[#414868] shadow-2xl p-4">
           <img
             src={product.image}
@@ -135,7 +135,6 @@ export default function ProductDetailPage({
           />
         </div>
 
-        {/* Product Details - Right Side (5 columns) */}
         <div className="lg:col-span-5 flex flex-col justify-start bg-[#1f2335] p-6 sm:p-8 rounded-3xl border border-[#24283b] shadow-xl">
           <div className="flex items-center justify-between mb-3">
             <span className="bg-[#bb9af7]/10 text-[#bb9af7] border border-[#bb9af7]/20 text-xs font-semibold px-3 py-1 rounded-full uppercase">
@@ -162,7 +161,6 @@ export default function ProductDetailPage({
             {product.description}
           </p>
 
-          {/* Specs List */}
           <div className="mb-8">
             <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">
               ძირითადი მახასიათებლები:
@@ -180,7 +178,6 @@ export default function ProductDetailPage({
             </ul>
           </div>
 
-          {/* Add to cart button */}
           <button
             onClick={handleAddToCart}
             className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-3 transition-all cursor-pointer shadow-lg text-sm sm:text-base ${
@@ -200,7 +197,6 @@ export default function ProductDetailPage({
             )}
           </button>
 
-          {/* Extra Info Icons */}
           <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-[#24283b] text-center">
             <div className="flex flex-col items-center text-xs text-[#a9b1d6]">
               <Truck size={20} className="text-[#7aa2f7] mb-1" />
