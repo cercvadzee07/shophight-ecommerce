@@ -365,4 +365,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-რომელი ჯობია 
