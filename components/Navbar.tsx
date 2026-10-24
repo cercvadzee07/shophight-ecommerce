@@ -4,10 +4,14 @@ import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useLangStore } from "@/store/useLangStore";
+import SearchBar from "./SearchBar";
+import { useState } from "react";
+import MiniCart from "./MiniCart";
 
 export default function Navbar() {
   const items = useCartStore((state) => state.items);
   const { lang, toggleLang } = useLangStore();
+  const [isMiniCartOpen, setIsMiniCartOpen] = useState(false);
 
   return (
     <nav className="bg-[#1f2335] border-b border-[#24283b] sticky top-0 z-50">
@@ -23,7 +27,7 @@ export default function Navbar() {
           {/* ენის გადამრთველი ღილაკი დროშებით */}
           <button
             onClick={toggleLang}
-            className="flex items-center gap-2 p-2 bg-[#1a1b26] rounded-xl border border-[#414868] hover:border-[#bb9af7] transition-all text-white font-bold text-sm"
+            className="flex items-center gap-2 p-2 bg-[#1a1b26] rounded-xl border border-[#414868] hover:border-[#bb9af7] transition-all text-white font-bold text-sm cursor-pointer"
           >
             <span className="text-lg leading-none">
               {lang === "ka" ? "🇬🇧" : "🇬🇪"}
@@ -31,10 +35,10 @@ export default function Navbar() {
             {lang === "ka" ? "ENG" : "GEO"}
           </button>
 
-          {/* კალათა */}
-          <Link
-            href="/cart"
-            className="relative p-2 text-[#a9b1d6] hover:text-white transition-colors"
+          {/* კალათის ღილაკი, რომელიც ხსნის მინი-კალათას */}
+          <button
+            onClick={() => setIsMiniCartOpen(true)}
+            className="relative p-2 text-[#a9b1d6] hover:text-white transition-colors cursor-pointer"
           >
             <ShoppingCart size={24} />
             {items.length > 0 && (
@@ -42,9 +46,15 @@ export default function Navbar() {
                 {items.length}
               </span>
             )}
-          </Link>
+          </button>
         </div>
       </div>
+
+      {/* მინი-კალათის კომპონენტი */}
+      <MiniCart
+        isOpen={isMiniCartOpen}
+        onClose={() => setIsMiniCartOpen(false)}
+      />
     </nav>
   );
 }

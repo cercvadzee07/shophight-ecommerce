@@ -1,92 +1,83 @@
 "use client";
 
 import Link from "next/link";
-import { Heart } from "lucide-react";
-import { motion } from "framer-motion";
+import { useCartStore } from "@/store/useCartStore";
+import { useLangStore } from "@/store/useLangStore";
+import { ShoppingCart, Star } from "lucide-react";
 import toast from "react-hot-toast";
 
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  category: string;
-  image: string;
-}
+export default function ProductCard3D({ product }: { product: any }) {
+  const addItem = useCartStore((state) => state.addItem);
+  const { lang } = useLangStore();
 
-interface ProductCardProps {
-  product: Product;
-  inWishlist: boolean;
-  onToggleWishlist: (product: Product) => void;
-  lang: string;
-  t: any;
-}
+  const CATEGORY_MAP: Record<string, { ka: string; en: string }> = {
+    Electronics: { ka: "ელექტრონიკა", en: "Electronics" },
+    Accessories: { ka: "აქსესუარები", en: "Accessories" },
+    Fashion: { ka: "მოდა", en: "Fashion" },
+    Footwear: { ka: "ფეხსაცმელი", en: "Footwear" },
+    ელექტრონიკა: { ka: "ელექტრონიკა", en: "Electronics" },
+    აქსესუარები: { ka: "აქსესუარები", en: "Accessories" },
+    მოდა: { ka: "მოდა", en: "Fashion" },
+    ფეხსაცმელი: { ka: "ფეხსაცმელი", en: "Footwear" },
+  };
 
-export default function ProductCard3D({
-  product,
-  inWishlist,
-  onToggleWishlist,
-  lang,
-  t,
-}: ProductCardProps) {
+  const displayCategory =
+    CATEGORY_MAP[product.category]?.[lang as "ka" | "en"] || product.category;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addItem(product);
+    toast.success(lang === "ka" ? "დაემატა კალათაში!" : "Added to cart!");
+  };
+
   return (
-    <div className="relative bg-[#1f2335]/90 backdrop-blur-xl rounded-3xl border border-[#24283b] overflow-hidden hover:border-[#7aa2f7] hover:shadow-[0_10px_30px_rgba(122,162,247,0.2)] transition-all duration-500 group h-full flex flex-col">
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          onToggleWishlist(product);
-          if (inWishlist) {
-            toast.error(
-              lang === "ka" ? "წაიშალა რჩეულებიდან" : "Removed from wishlist",
-              { icon: "💔" },
-            );
-          } else {
-            toast.success(
-              lang === "ka" ? "დაემატა რჩეულებში!" : "Added to wishlist!",
-            );
-          }
-        }}
-        className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-[#1a1b26]/80 backdrop-blur-md text-[#a9b1d6] hover:text-[#f7768e] border border-[#414868]/50 transition-all hover:scale-110"
-      >
-        <Heart
-          size={20}
-          fill={inWishlist ? "#f7768e" : "none"}
-          color={inWishlist ? "#f7768e" : "currentColor"}
-        />
-      </button>
-
-      <Link
-        href={`/products/${product.id}`}
-        className="flex flex-col flex-grow"
-      >
-        <div className="relative h-56 overflow-hidden bg-[#16161e]">
+    <Link
+      href={`/products/${product.id}`}
+      className="flex flex-col flex-1 group h-full"
+    >
+      <div className="relative bg-[#1f2335]/90 backdrop-blur-xl rounded-3xl border border-[#24283b] transition-all duration-500 overflow-hidden shadow-lg hover:shadow-[0_0_30px_rgba(122,162,247,0.2)] hover:-translate-y-2 flex flex-col h-full">
+        <div className="relative h-60 overflow-hidden bg-[#16161e] shrink-0">
           <img
             src={product.image}
             alt={product.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1f2335] via-transparent to-transparent opacity-60"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1f2335] via-[#1f2335]/20 to-transparent opacity-80"></div>
         </div>
 
-        <div className="p-6 flex flex-col flex-grow justify-between">
-          <div>
-            <span className="inline-block text-[#bb9af7] text-xs font-bold uppercase tracking-wider mb-2 px-2.5 py-1 rounded-lg bg-[#bb9af7]/10 border border-[#bb9af7]/20">
-              {t[product.category as keyof typeof t]}
+        <div className="p-6 pt-5 flex flex-col flex-1 justify-between relative z-10">
+          <div className="flex flex-col w-full overflow-hidden">
+            <span className="inline-block self-start text-[#bb9af7] text-[10px] font-bold uppercase tracking-wider mb-4 px-3 py-1.5 rounded-xl bg-[#1a1b26] border border-[#bb9af7]/20 shadow-md">
+              {displayCategory}
             </span>
-            <h3 className="text-white font-bold text-xl group-hover:text-[#7aa2f7] transition-colors line-clamp-1">
+
+            {/* ეს ხაზი აგვარებს პრობლემას: truncate w-full block უზრუნველყოფს ერთ ხაზზე გაყინვას */}
+            <h3 className="text-white font-extrabold text-lg group-hover:text-[#7aa2f7] transition-colors truncate w-full block mb-3">
               {product.title}
             </h3>
+
+            <div className="flex items-center gap-1 text-[#e0af68] mb-4">
+              <Star size={14} fill="currentColor" />
+              <Star size={14} fill="currentColor" />
+              <Star size={14} fill="currentColor" />
+              <Star size={14} fill="currentColor" />
+              <Star size={14} fill="currentColor" />
+            </div>
           </div>
 
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#24283b]">
-            <span className="text-[#9ece6a] font-black text-2xl">
+          <div className="flex items-center justify-between mt-auto pt-2">
+            <span className="text-2xl font-black text-[#9ece6a]">
               ${product.price}
             </span>
-            <span className="text-xs text-[#a9b1d6] group-hover:text-white transition-colors flex items-center gap-1 font-medium">
-              დეტალურად →
-            </span>
+            <button
+              onClick={handleAddToCart}
+              className="p-3 bg-[#7aa2f7]/10 text-[#7aa2f7] rounded-xl hover:bg-[#7aa2f7] hover:text-[#1a1b26] transition-colors shadow-sm"
+            >
+              <ShoppingCart size={20} />
+            </button>
           </div>
         </div>
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 }

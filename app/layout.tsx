@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "react-hot-toast";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,10 +42,16 @@ export default function RootLayout({
         </div>
 
         {/* მთავარი კონტენტი */}
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-col min-h-screen">
           <Navbar />
-          {children}
+
+          <main className="flex-grow">{children}</main>
+
+          <Footer />
         </div>
+
+        {/* Toaster შეტყობინებებისთვის */}
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );
