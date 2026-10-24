@@ -1,0 +1,26 @@
+export const DICTIONARY = {
+  ka: {
+    products: "პროდუქტები",
+    search: "მოძებნე პროდუქტი...",
+    wishlist: "რჩეულები",
+    notFound: "პროდუქტი ვერ მოიძებნა",
+    addToCart: "კალათაში დამატება",
+    all: "ყველა",
+    electronics: "ელექტრონიკა",
+    accessories: "აქსესუარები",
+    fashion: "მოდა",
+    shoes: "ფეხსაცმელი",
+  },
+  en: {
+    products: "Products",
+    search: "Search products...",
+    wishlist: "Wishlist",
+    notFound: "Product not found",
+    addToCart: "Add to Cart",
+    all: "All",
+    electronics: "Electronics",
+    accessories: "Accessories",
+    fashion: "Fashion",
+    shoes: "Shoes",
+  },
+};

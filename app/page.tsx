@@ -1,83 +1,165 @@
-import ProductCard from "@/components/ProductCard";
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Search, Heart } from "lucide-react";
+import { useWishlistStore } from "@/store/useWishlistStore";
+import { useLangStore } from "@/store/useLangStore";
+import { DICTIONARY } from "@/utils/dictionary";
+import ProductCard3D from "@/components/ProductCard3D";
+import { motion } from "framer-motion";
 
 const MOCK_PRODUCTS = [
   {
     id: 1,
-    title: "უსადენო ყურსასმენი (Wireless Headphones)",
+    title: "Wireless Headphones",
     price: 129.99,
-    category: "ელექტრონიკა",
+    category: "electronics",
     image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80",
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1000&q=80",
   },
   {
     id: 2,
-    title: "ჭკვიანი საათი (Smart Watch)",
+    title: "Smart Watch",
     price: 199.99,
-    category: "აქსესუარები",
+    category: "accessories",
     image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80",
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1000&q=80",
   },
   {
     id: 3,
-    title: "მინიმალისტური ზურგჩანთა (Backpack)",
+    title: "Minimalist Backpack",
     price: 59.99,
-    category: "მოდა",
+    category: "fashion",
     image:
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80",
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1000&q=80",
   },
   {
     id: 4,
-    title: "სპორტული ფეხსაცმელი (Sneakers)",
+    title: "Sports Sneakers",
     price: 89.99,
-    category: "ფეხსაცმელი",
+    category: "shoes",
     image:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80",
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=80",
   },
 ];
 
+const CATEGORY_KEYS = ["all", "electronics", "accessories", "fashion", "shoes"];
+
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [isMounted, setIsMounted] = useState(false);
+
+  const { items, toggleWishlist, isInWishlist } = useWishlistStore();
+  const { lang } = useLangStore();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const currentLang = isMounted ? lang : "ka";
+  const t = isMounted ? DICTIONARY[lang] : DICTIONARY.ka;
+
+  const filteredProducts = MOCK_PRODUCTS.filter((product) => {
+    const matchesSearch = product.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      activeCategory === "all" || product.category === activeCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-[#c0caf5]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Banner */}
-        <div className="relative bg-gradient-to-br from-[#24283b] to-[#1f2335] rounded-2xl p-8 md:p-12 border border-[#414868] mb-12 shadow-2xl overflow-hidden">
-          <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-[#7aa2f7]/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute -left-10 -top-10 w-64 h-64 bg-[#bb9af7]/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* ზედა ნაწილი: სათაური და Wishlist */}
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+        <h1 className="text-3xl font-extrabold text-white">{t.products}</h1>
 
-          <div className="relative z-10 max-w-2xl">
-            <span className="inline-block bg-[#bb9af7]/10 text-[#bb9af7] border border-[#bb9af7]/20 text-xs font-semibold px-3 py-1 rounded-full mb-4">
-              CYBER SALE 2026
-            </span>
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
-              კიბერპანკ და ტოკიო ნაიტ სტილის გამოცდილება
-            </h1>
-            <p className="mt-4 text-[#a9b1d6] text-sm md:text-base leading-relaxed">
-              აღმოაჩინე უახლესი ტექნოლოგიები და ფუტურისტული აქსესუარები
-              განსაკუთრებულ ნეონურ ფასებში.
-            </p>
-            <button className="mt-8 bg-gradient-to-r from-[#7aa2f7] to-[#bb9af7] text-[#1a1b26] font-bold px-6 py-3 rounded-xl shadow-[0_0_20px_rgba(122,162,247,0.4)] hover:shadow-[0_0_25px_rgba(187,154,247,0.6)] transition-all">
-              შოპინგის დაწყება
-            </button>
-          </div>
-        </div>
-
-        {/* Products Section */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
-            <span className="w-2 h-6 bg-[#bb9af7] rounded-full"></span>
-            გამორჩეული პროდუქტები
-          </h2>
-          <span className="text-sm text-[#7aa2f7] font-medium cursor-pointer hover:underline">
-            ყველას ნახვა &rarr;
+        <Link
+          href="/wishlist"
+          className="relative p-3 bg-[#1f2335]/90 backdrop-blur-xl rounded-2xl border border-[#24283b] hover:border-[#7aa2f7] transition-all flex items-center gap-2 shadow-lg"
+        >
+          <Heart className="text-[#f7768e]" size={24} />
+          <span className="text-white font-medium hidden sm:block">
+            {t.wishlist}
           </span>
+          {isMounted && items.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-[#7aa2f7] text-[#1a1b26] text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-lg">
+              {items.length}
+            </span>
+          )}
+        </Link>
+      </div>
+
+      {/* ძებნა და კატეგორიები */}
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-10 bg-[#1f2335]/90 backdrop-blur-xl p-4 rounded-3xl border border-[#24283b] shadow-xl">
+        <div className="relative w-full md:w-96">
+          <Search
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#a9b1d6]"
+            size={20}
+          />
+          <input
+            type="text"
+            placeholder={t.search}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a1b26] border border-[#414868] text-white rounded-2xl py-3 pl-11 pr-4 focus:outline-none focus:border-[#7aa2f7] transition-colors"
+          />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {MOCK_PRODUCTS.map((product) => (
-            <ProductCard key={product.id} product={product} />
+        <div className="flex flex-wrap gap-2 justify-center">
+          {CATEGORY_KEYS.map((catKey) => (
+            <button
+              key={catKey}
+              onClick={() => setActiveCategory(catKey)}
+              className={`px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
+                activeCategory === catKey
+                  ? "bg-[#7aa2f7] text-[#1a1b26] shadow-[0_0_20px_rgba(122,162,247,0.4)]"
+                  : "bg-[#24283b] text-[#a9b1d6] hover:text-white hover:bg-[#414868]"
+              }`}
+            >
+              {t[catKey as keyof typeof t]}
+            </button>
           ))}
         </div>
       </div>
+
+      {/* პროდუქტების ბადე 3D ბარათებით */}
+      {filteredProducts.length === 0 ? (
+        <div className="text-center text-[#a9b1d6] py-20 bg-[#1f2335]/50 rounded-3xl border border-[#24283b]">
+          {t.notFound}
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          {filteredProducts.map((product, index) => {
+            const inWishlist = isMounted ? isInWishlist(product.id) : false;
+
+            return (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="h-full"
+              >
+                <ProductCard3D
+                  product={product}
+                  inWishlist={inWishlist}
+                  onToggleWishlist={(p) => toggleWishlist(p as any)}
+                  lang={currentLang}
+                  t={t}
+                />
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
     </div>
   );
 }

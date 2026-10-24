@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,11 +26,25 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ka">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#1a1b26] text-[#c0caf5] min-h-screen`}
-      >
-        <Navbar />
-        <main>{children}</main>
+      <body className="bg-[#0f111a] text-white min-h-screen relative overflow-x-hidden selection:bg-[#7aa2f7] selection:text-[#1a1b26]">
+        {/* ჰოლოგრამული ფონის ნეონის ლაქები */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] bg-[#7aa2f7]/10 rounded-full blur-[140px] animate-aurora"></div>
+          <div
+            className="absolute top-[40%] -right-[10%] w-[45vw] h-[45vw] bg-[#bb9af7]/10 rounded-full blur-[140px] animate-aurora"
+            style={{ animationDelay: "5s" }}
+          ></div>
+          <div
+            className="absolute -bottom-[10%] left-[20%] w-[50vw] h-[50vw] bg-[#9ece6a]/5 rounded-full blur-[140px] animate-aurora"
+            style={{ animationDelay: "10s" }}
+          ></div>
+        </div>
+
+        {/* მთავარი კონტენტი */}
+        <div className="relative z-10">
+          <Navbar />
+          {children}
+        </div>
       </body>
     </html>
   );
