@@ -221,7 +221,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-[#24283b] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#414868] font-medium">
           <p>
-            © {new Date().getFullYear()} ShopNight.{" "}
+            © 2026 ShopNight.
             {lang === "ka" ? "ყველა უფლება დაცულია." : "All rights reserved."}
           </p>
           <div className="flex items-center gap-1">
