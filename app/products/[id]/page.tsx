@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { use, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import Link from "next/link";
