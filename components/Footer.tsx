@@ -153,12 +153,12 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/faq"
                   className="text-[#a9b1d6] hover:text-[#bb9af7] hover:translate-x-1 transition-all inline-block"
                 >
                   {lang === "ka" ? "ხშირად დასმული კითხვები" : "FAQ"}
-                </a>
+                </Link>
               </li>
               <li>
                 <a

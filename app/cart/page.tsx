@@ -15,10 +15,20 @@ import { useLangStore } from "@/store/useLangStore";
 import { DICTIONARY } from "@/utils/dictionary";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import PromoSection from "@/components/PromoSection";
 
 export default function CartPage() {
   const [isMounted, setIsMounted] = useState(false);
-  const { items, removeItem, updateQuantity, clearCart } = useCartStore();
+
+  // ყველა მნიშვნელობა კალათის სთორიდან გამოვიტანეთ ერთად, კომპონენტის დასაწყისში
+  const {
+    items,
+    removeItem,
+    updateQuantity,
+    clearCart,
+    discountRate,
+    getDiscountAmount,
+  } = useCartStore();
 
   const { lang } = useLangStore();
   const t = DICTIONARY[lang];
@@ -29,12 +39,14 @@ export default function CartPage() {
 
   if (!isMounted) return null;
 
+  // გამოთვლები
   const subtotal = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,
   );
   const shipping = items.length > 0 ? 10.0 : 0;
-  const total = subtotal + shipping;
+  const discount = getDiscountAmount ? getDiscountAmount() : 0;
+  const total = Math.max(0, subtotal - discount + shipping);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -159,7 +171,7 @@ export default function CartPage() {
               {lang === "ka" ? "შეკვეთის დეტალები" : "Order Summary"}
             </h2>
 
-            <div className="space-y-3 text-sm text-[#a9b1d6] mb-6 border-b border-[#24283b] pb-6">
+            <div className="space-y-3 text-sm text-[#a9b1d6] mb-4">
               <div className="flex justify-between">
                 <span>
                   {lang === "ka" ? "პროდუქტების ღირებულება" : "Subtotal"}
@@ -176,7 +188,18 @@ export default function CartPage() {
               </div>
             </div>
 
-            <div className="flex justify-between text-lg font-bold text-white mb-8">
+            {/* პრომო-კოდის ჩასაწერი ველი */}
+            <PromoSection />
+
+            {/* თუ პრომო-კოდი გააქტიურებულია, გამოჩნდება ფასდაკლების ხაზი */}
+            {discountRate > 0 && (
+              <div className="flex justify-between text-sm text-[#9ece6a] font-bold py-2 border-t border-[#24283b]/60">
+                <span>{lang === "ka" ? "ფასდაკლება" : "Discount"}</span>
+                <span>-${discount.toFixed(2)}</span>
+              </div>
+            )}
+
+            <div className="flex justify-between text-lg font-bold text-white my-6 pt-4 border-t border-[#24283b]">
               <span>{lang === "ka" ? "სულ ჯამში" : "Total"}</span>
               <span className="text-[#9ece6a] text-2xl">
                 ${total.toFixed(2)}

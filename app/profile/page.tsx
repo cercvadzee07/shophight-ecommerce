@@ -3,19 +3,11 @@
 import { useState, useEffect } from "react";
 import { useLangStore } from "@/store/useLangStore";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  User,
-  Package,
-  MapPin,
-  LogOut,
-  Settings,
-  Clock,
-  CheckCircle2,
-} from "lucide-react";
-import Link from "next/link";
+import { User, Package, MapPin, LogOut, Settings } from "lucide-react";
 import toast from "react-hot-toast";
+import OrderTracker from "@/components/OrderTracker";
 
-// დროებითი მონაცემები
+// დროებითი მომხმარებლის მონაცემები
 const MOCK_USER = {
   name: "ბექა წერცვაძე",
   email: "beka@neondev.ge",
@@ -23,20 +15,21 @@ const MOCK_USER = {
   joinDate: "2026-05-20",
 };
 
-const MOCK_ORDERS = [
+// შეკვეთების მონაცემები თაიმლაინისთვის
+const SAMPLE_ORDERS = [
   {
-    id: "ORD-8923",
-    date: "2026-10-22",
-    total: 129.99,
-    status: "delivered",
-    items: 1,
+    orderId: "SN-9821",
+    status: "in_transit" as const,
+    date: "2026-10-26 18:30",
+    total: 249.98,
+    itemsCount: 2,
   },
   {
-    id: "ORD-8744",
-    date: "2026-10-15",
-    total: 349.98,
-    status: "processing",
-    items: 2,
+    orderId: "SN-7734",
+    status: "delivered" as const,
+    date: "2026-10-18 14:15",
+    total: 89.99,
+    itemsCount: 1,
   },
 ];
 
@@ -143,8 +136,8 @@ export default function ProfilePage() {
         </div>
 
         {/* მარჯვენა კონტენტი */}
+
         <div className="flex-grow bg-[#1f2335]/90 backdrop-blur-xl border border-[#24283b] rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-          {/* ფონური მანათობელი ეფექტი */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#7aa2f7]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
           <AnimatePresence mode="wait">
@@ -211,38 +204,10 @@ export default function ProfilePage() {
                   {lang === "ka" ? "შეკვეთების ისტორია" : "Order History"}
                 </h2>
 
-                <div className="space-y-4">
-                  {MOCK_ORDERS.map((order) => (
-                    <div
-                      key={order.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-[#1a1b26] border border-[#414868] rounded-2xl hover:border-[#7aa2f7] transition-colors gap-4"
-                    >
-                      <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <span className="text-white font-bold">
-                            {order.id}
-                          </span>
-                          {order.status === "delivered" ? (
-                            <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-[#9ece6a] bg-[#9ece6a]/10 px-2 py-1 rounded-md">
-                              <CheckCircle2 size={12} />{" "}
-                              {lang === "ka" ? "ჩაბარებული" : "Delivered"}
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-[#e0af68] bg-[#e0af68]/10 px-2 py-1 rounded-md">
-                              <Clock size={12} />{" "}
-                              {lang === "ka" ? "მზადდება" : "Processing"}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-[#a9b1d6]">
-                          {order.date} • {order.items}{" "}
-                          {lang === "ka" ? "ნივთი" : "Items"}
-                        </span>
-                      </div>
-                      <div className="text-xl font-black text-[#7aa2f7]">
-                        ${order.total.toFixed(2)}
-                      </div>
-                    </div>
+                {/* თაიმლაინ ბარათები */}
+                <div className="space-y-6">
+                  {SAMPLE_ORDERS.map((order) => (
+                    <OrderTracker key={order.orderId} {...order} />
                   ))}
                 </div>
               </motion.div>

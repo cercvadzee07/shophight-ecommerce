@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
+import { X, Trash2, ShoppingBag, ArrowRight, Plus, Minus } from "lucide-react";
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
 import { useLangStore } from "@/store/useLangStore";
@@ -14,13 +14,19 @@ interface MiniCartProps {
 export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
   const { lang } = useLangStore();
 
-  // ვიღებთ მონაცემებს შენი არსებული Zustand სთორიდან
   const items = useCartStore((state: any) => state.items || []);
   const removeItem = useCartStore(
     (state: any) => state.removeItem || (() => {}),
   );
+  const updateQuantity = useCartStore(
+    (state: any) => state.updateQuantity || (() => {}),
+  );
 
-  // ჯამური ფასის დათვლა
+  const totalItemCount = items.reduce(
+    (acc: number, item: any) => acc + (item.quantity || 1),
+    0,
+  );
+
   const total = items.reduce(
     (acc: number, item: any) => acc + item.price * (item.quantity || 1),
     0,
@@ -30,7 +36,6 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* ფონური დაბურვა */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -39,7 +44,6 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
             className="fixed inset-0 bg-[#0f111a]/60 backdrop-blur-sm z-[60]"
           />
 
-          {/* შუშისებრი კალათის პანელი მარჯვნივ */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -47,7 +51,6 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-[#1f2335]/95 backdrop-blur-2xl border-l border-[#24283b] shadow-[-20px_0_40px_rgba(0,0,0,0.5)] z-[70] flex flex-col"
           >
-            {/* ჰედერი */}
             <div className="px-6 py-6 border-b border-[#24283b] flex items-center justify-between bg-[#1a1b26]/50">
               <div className="flex items-center gap-3">
                 <ShoppingBag className="text-[#7aa2f7]" size={24} />
@@ -55,18 +58,17 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                   {lang === "ka" ? "ჩემი კალათა" : "My Cart"}
                 </h2>
                 <span className="bg-[#7aa2f7]/20 text-[#7aa2f7] text-xs font-extrabold px-3 py-1 rounded-full">
-                  {items.length}
+                  {totalItemCount}
                 </span>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-[#a9b1d6] hover:text-[#f7768e] hover:bg-[#f7768e]/10 rounded-xl transition-all"
+                className="p-2 text-[#a9b1d6] hover:text-[#f7768e] hover:bg-[#f7768e]/10 rounded-xl transition-all cursor-pointer"
               >
                 <X size={24} />
               </button>
             </div>
 
-            {/* ნივთების სია */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#414868] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#7aa2f7]">
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-[#a9b1d6] gap-4">
@@ -76,49 +78,71 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                   </p>
                   <button
                     onClick={onClose}
-                    className="mt-2 text-[#7aa2f7] hover:underline text-sm"
+                    className="mt-2 text-[#7aa2f7] hover:underline text-sm cursor-pointer"
                   >
                     {lang === "ka" ? "განაგრძეთ შოპინგი" : "Continue Shopping"}
                   </button>
                 </div>
               ) : (
-                items.map((item: any, index: number) => (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    key={index}
-                    className="flex gap-4 bg-[#1a1b26] border border-[#24283b] p-3 rounded-2xl hover:border-[#414868] transition-colors group"
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-20 h-20 object-cover rounded-xl bg-[#16161e]"
-                    />
-                    <div className="flex-1 flex flex-col justify-between py-1">
-                      <div>
-                        <h4 className="text-sm font-bold text-white line-clamp-2 leading-snug group-hover:text-[#7aa2f7] transition-colors">
-                          {item.title}
-                        </h4>
+                items.map((item: any) => {
+                  const qty = item.quantity || 1;
+                  return (
+                    <motion.div
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      key={item.id}
+                      className="flex gap-4 bg-[#1a1b26] border border-[#24283b] p-3 rounded-2xl hover:border-[#414868] transition-colors group"
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-20 h-20 object-cover rounded-xl bg-[#16161e] shrink-0"
+                      />
+                      <div className="flex-1 flex flex-col justify-between py-0.5 min-w-0">
+                        <div>
+                          <h4 className="text-sm font-bold text-white truncate group-hover:text-[#7aa2f7] transition-colors">
+                            {item.title}
+                          </h4>
+                          <span className="text-[#9ece6a] font-black text-sm block mt-1">
+                            ${(item.price * qty).toFixed(2)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#24283b]/60">
+                          <div className="flex items-center gap-1.5 bg-[#1f2335] border border-[#24283b] rounded-lg p-0.5">
+                            <button
+                              onClick={() => updateQuantity(item.id, qty - 1)}
+                              className="w-6 h-6 flex items-center justify-center text-[#a9b1d6] hover:text-white rounded hover:bg-[#24283b] transition-colors cursor-pointer"
+                            >
+                              <Minus size={13} />
+                            </button>
+                            <span className="text-white text-xs font-bold px-1.5 min-w-[1.2rem] text-center">
+                              {qty}
+                            </span>
+                            <button
+                              onClick={() => updateQuantity(item.id, qty + 1)}
+                              className="w-6 h-6 flex items-center justify-center text-[#a9b1d6] hover:text-white rounded hover:bg-[#24283b] transition-colors cursor-pointer"
+                            >
+                              <Plus size={13} />
+                            </button>
+                          </div>
+
+                          <button
+                            onClick={() => removeItem(item.id)}
+                            className="text-[#414868] hover:text-[#f7768e] bg-[#1f2335] p-1.5 rounded-lg transition-colors border border-[#24283b] hover:border-[#f7768e]/40 cursor-pointer"
+                            title={lang === "ka" ? "წაშლა" : "Remove"}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-[#9ece6a] font-black text-lg">
-                          ${item.price}
-                        </span>
-                        <button
-                          onClick={() => removeItem(item.id)}
-                          className="text-[#414868] hover:text-[#f7768e] bg-[#1f2335] p-2 rounded-lg transition-colors border border-[#24283b] hover:border-[#f7768e]/50"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))
+                    </motion.div>
+                  );
+                })
               )}
             </div>
 
-            {/* ფუტერი (ჯამი და ღილაკები) */}
             {items.length > 0 && (
               <div className="p-6 border-t border-[#24283b] bg-[#1a1b26]">
                 <div className="flex items-center justify-between mb-6 bg-[#1f2335] p-4 rounded-xl border border-[#24283b]">

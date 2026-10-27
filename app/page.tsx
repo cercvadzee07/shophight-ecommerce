@@ -6,66 +6,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Filter, ArrowDownUp } from "lucide-react";
 import ProductCard3D from "@/components/ProductCard3D";
 import HeroSlider from "@/components/HeroSlider";
+import { PRODUCTS } from "@/data/products";
 
-const MOCK_PRODUCTS = [
-  {
-    id: 1,
-    title: "უსადენო ყურსასმენი (Wireless Headphones)",
-    price: 129.99,
-    category: "Electronics",
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1000&q=80",
-  },
-  {
-    id: 2,
-    title: "ჭკვიანი საათი (Smart Watch)",
-    price: 199.99,
-    category: "Accessories",
-    image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1000&q=80",
-  },
-  {
-    id: 3,
-    title: "მინიმალისტური ზურგჩანთა (Backpack)",
-    price: 59.99,
-    category: "Fashion",
-    image:
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1000&q=80",
-  },
-  {
-    id: 4,
-    title: "სპორტული ფეხსაცმელი (Sneakers)",
-    price: 89.99,
-    category: "Footwear",
-    image:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=80",
-  },
-  {
-    id: 5,
-    title: "მექანიკური კლავიატურა (Mechanical Keyboard)",
-    price: 149.99,
-    category: "Electronics",
-    image:
-      "https://images.unsplash.com/photo-1595225476474-87563907a212?w=1000&q=80",
-  },
-  {
-    id: 6,
-    title: "მზის სათვალე (Sunglasses)",
-    price: 39.99,
-    category: "Accessories",
-    image:
-      "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=1000&q=80",
-  },
+const CATEGORIES = [
+  "All",
+  "ელექტრონიკა",
+  "გეიმინგი",
+  "აქსესუარები",
+  "მოდა",
+  "ფეხსაცმელი",
 ];
-
-const CATEGORIES = ["All", "Electronics", "Accessories", "Fashion", "Footwear"];
 
 const CATEGORY_TRANSLATIONS: Record<string, { ka: string; en: string }> = {
   All: { ka: "ყველა", en: "All" },
-  Electronics: { ka: "ელექტრონიკა", en: "Electronics" },
-  Accessories: { ka: "აქსესუარები", en: "Accessories" },
-  Fashion: { ka: "მოდა", en: "Fashion" },
-  Footwear: { ka: "ფეხსაცმელი", en: "Footwear" },
+  ელექტრონიკა: { ka: "ელექტრონიკა", en: "Electronics" },
+  გეიმინგი: { ka: "გეიმინგი", en: "Gaming" },
+  აქსესუარები: { ka: "აქსესუარები", en: "Accessories" },
+  მოდა: { ka: "მოდა", en: "Fashion" },
+  ფეხსაცმელი: { ka: "ფეხსაცმელი", en: "Footwear" },
 };
 
 export default function HomePage() {
@@ -73,18 +31,20 @@ export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortOrder, setSortOrder] = useState("default");
 
-  let filteredProducts = MOCK_PRODUCTS.filter((product) =>
+  // ფილტრაცია კატეგორიის მიხედვით
+  let filteredProducts = PRODUCTS.filter((product) =>
     activeCategory === "All" ? true : product.category === activeCategory,
   );
 
+  // ფასის სორტირება
   if (sortOrder === "low-to-high") {
-    filteredProducts.sort((a, b) => a.price - b.price);
+    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
   } else if (sortOrder === "high-to-low") {
-    filteredProducts.sort((a, b) => b.price - a.price);
+    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-screen">
       {/* ანიმაციური სლაიდერი */}
       <HeroSlider />
 
@@ -98,13 +58,13 @@ export default function HomePage() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 cursor-pointer ${
                   activeCategory === cat
                     ? "bg-[#7aa2f7] text-[#1a1b26] shadow-[0_0_15px_rgba(122,162,247,0.4)]"
                     : "bg-[#1a1b26] text-[#a9b1d6] border border-[#414868] hover:border-[#7aa2f7] hover:text-white"
                 }`}
               >
-                {CATEGORY_TRANSLATIONS[cat][lang as "ka" | "en"]}
+                {CATEGORY_TRANSLATIONS[cat]?.[lang as "ka" | "en"] || cat}
               </button>
             ))}
           </div>
@@ -131,7 +91,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* პროდუქტების გრიდი */}
+      {/* პროდუქტების გრიდი 20 ნივთით */}
       <motion.div
         layout
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
@@ -146,7 +106,7 @@ export default function HomePage() {
               transition={{ duration: 0.3 }}
               key={product.id}
             >
-              <ProductCard3D product={product} />
+              <ProductCard3D product={product as any} />
             </motion.div>
           ))}
         </AnimatePresence>

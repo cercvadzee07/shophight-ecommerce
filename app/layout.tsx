@@ -51,7 +51,40 @@ export default function RootLayout({
         </div>
 
         {/* Toaster შეტყობინებებისთვის */}
-        <Toaster position="bottom-right" />
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: "#1f2335",
+              color: "#c0caf5",
+              border: "1px solid #24283b",
+              boxShadow: "0 0 20px rgba(122, 162, 247, 0.25)",
+              borderRadius: "1rem",
+              padding: "12px 18px",
+              fontSize: "14px",
+              fontWeight: "600",
+            },
+            success: {
+              iconTheme: {
+                primary: "#9ece6a",
+                secondary: "#16161e",
+              },
+              style: {
+                border: "1px solid rgba(158, 206, 106, 0.3)",
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: "#f7768e",
+                secondary: "#16161e",
+              },
+              style: {
+                border: "1px solid rgba(247, 118, 142, 0.3)",
+              },
+            },
+          }}
+        />
       </body>
     </html>
   );

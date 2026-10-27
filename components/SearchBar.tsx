@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { useLangStore } from "@/store/useLangStore";
 import { motion, AnimatePresence } from "framer-motion";
+import { PRODUCTS } from "@/data/products";
 
 // დროებითი პროდუქტების ბაზა საძიებო სისტემისთვის
 // (მომავალში შეგიძლია შემოიტანო შენი რეალური `products` მასივი)
@@ -46,9 +47,12 @@ export default function SearchBar() {
   const searchRef = useRef<HTMLDivElement>(null);
 
   // ძებნის ლოგიკა (ეძებს სათაურის მიხედვით)
-  const filteredProducts = MOCK_PRODUCTS.filter((p) =>
-    p.title.toLowerCase().includes(query.toLowerCase()),
-  );
+  const filteredProducts = PRODUCTS.filter((p) => {
+    const title = p.title.toLowerCase();
+    const cat = p.category.toLowerCase();
+    const q = query.toLowerCase();
+    return title.includes(q) || cat.includes(q);
+  });
 
   // გარეთ დაკლიკებისას ჩამოსაშლელის დახურვა
   useEffect(() => {
