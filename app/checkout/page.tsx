@@ -8,6 +8,7 @@ import { useLangStore } from "@/store/useLangStore";
 import { DICTIONARY } from "@/utils/dictionary";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import PromoSection from "@/components/PromoSection";
 
 const GEORGIAN_CITIES = [
   "თბილისი",
@@ -24,7 +25,7 @@ const GEORGIAN_CITIES = [
 
 export default function CheckoutPage() {
   const [isMounted, setIsMounted] = useState(false);
-  const { items, clearCart } = useCartStore();
+  const { items, clearCart, discountRate } = useCartStore();
   const { lang } = useLangStore();
   const t = DICTIONARY[lang];
 
@@ -44,12 +45,14 @@ export default function CheckoutPage() {
 
   if (!isMounted) return null;
 
+  // თანხების გამოთვლა Zustand Store-ის discountRate-ით
   const subtotal = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,
   );
+  const discountAmount = subtotal * (discountRate || 0);
   const shipping = items.length > 0 ? 10.0 : 0;
-  const total = subtotal + shipping;
+  const total = Math.max(0, subtotal - discountAmount + shipping);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let val = e.target.value;
@@ -335,11 +338,14 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <span className="text-[#9ece6a] font-bold">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  ლ{(item.price * item.quantity).toFixed(2)}
                 </span>
               </div>
             ))}
           </div>
+
+          {/* შენი PromoSection კომპონენტი */}
+          <PromoSection />
 
           <div className="space-y-3 text-sm text-[#a9b1d6] border-t border-[#24283b] pt-4">
             <div className="flex justify-between">
@@ -348,6 +354,18 @@ export default function CheckoutPage() {
                 ${subtotal.toFixed(2)}
               </span>
             </div>
+
+            {discountRate > 0 && (
+              <div className="flex justify-between text-[#9ece6a] font-bold">
+                <span>
+                  {lang === "ka"
+                    ? `ფასდაკლება (-${discountRate * 100}%)`
+                    : `Discount (-${discountRate * 100}%)`}
+                </span>
+                <span>-${discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+
             <div className="flex justify-between">
               <span>{lang === "ka" ? "მიწოდება" : "Shipping"}</span>
               <span className="text-white font-semibold">
@@ -358,7 +376,9 @@ export default function CheckoutPage() {
 
           <div className="flex justify-between text-lg font-bold text-white border-t border-[#24283b] pt-4">
             <span>{lang === "ka" ? "სულ ჯამში" : "Total"}</span>
-            <span className="text-[#9ece6a] text-2xl">${total.toFixed(2)}</span>
+            <span className="text-[#9ece6a] text-2xl font-black drop-shadow-[0_0_12px_rgba(158,206,106,0.3)]">
+              ${total.toFixed(2)}
+            </span>
           </div>
         </div>
       </div>

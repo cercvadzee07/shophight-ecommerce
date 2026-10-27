@@ -136,7 +136,7 @@ export default function WishlistPage() {
 
                 <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#24283b]">
                   <span className="text-[#9ece6a] font-black text-2xl">
-                    ${product.price}
+                    {product.price} ₾
                   </span>
                   <button
                     onClick={(e) => {

@@ -7,51 +7,24 @@ import { useLangStore } from "@/store/useLangStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { PRODUCTS } from "@/data/products";
 
-// დროებითი პროდუქტების ბაზა საძიებო სისტემისთვის
-// (მომავალში შეგიძლია შემოიტანო შენი რეალური `products` მასივი)
-const MOCK_PRODUCTS = [
-  {
-    id: 1,
-    title: "ჭკვიანი საათი (Smart Watch)",
-    price: 199.99,
-    image:
-      "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&q=80&w=100",
-  },
-  {
-    id: 2,
-    title: "უსადენო ყურსასმენი (Wireless Headphones)",
-    price: 129.99,
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=100",
-  },
-  {
-    id: 3,
-    title: "მექანიკური კლავიატურა (Mechanical Keyboard)",
-    price: 149.99,
-    image:
-      "https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&q=80&w=100",
-  },
-  {
-    id: 4,
-    title: "გეიმინგ მაუსი (Gaming Mouse)",
-    price: 79.99,
-    image:
-      "https://images.unsplash.com/photo-1527814050087-379381547939?auto=format&fit=crop&q=80&w=100",
-  },
-];
-
 export default function SearchBar() {
   const { lang } = useLangStore();
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // ძებნის ლოგიკა (ეძებს სათაურის მიხედვით)
+  // ძებნა ყველა 20 პროდუქტზე: სათაურით, კატეგორიით და აღწერით
   const filteredProducts = PRODUCTS.filter((p) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return false;
+
     const title = p.title.toLowerCase();
     const cat = p.category.toLowerCase();
-    const q = query.toLowerCase();
-    return title.includes(q) || cat.includes(q);
+    const desc = (
+      lang === "ka" ? p.descriptionKa : p.descriptionEn
+    ).toLowerCase();
+
+    return title.includes(q) || cat.includes(q) || desc.includes(q);
   });
 
   // გარეთ დაკლიკებისას ჩამოსაშლელის დახურვა
@@ -99,13 +72,13 @@ export default function SearchBar() {
       </div>
 
       <AnimatePresence>
-        {isOpen && query && (
+        {isOpen && query.trim() && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 mt-3 bg-[#1f2335]/95 backdrop-blur-xl border border-[#24283b] rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.5)] overflow-hidden max-h-[320px] overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-3 bg-[#1f2335]/95 backdrop-blur-xl border border-[#24283b] rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.5)] overflow-hidden max-h-[360px] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-[#24283b] [&::-webkit-scrollbar-thumb]:rounded-full"
           >
             {filteredProducts.length > 0 ? (
               <div className="py-2">
@@ -122,15 +95,20 @@ export default function SearchBar() {
                     <img
                       src={product.image}
                       alt={product.title}
-                      className="w-12 h-12 rounded-xl object-cover bg-[#16161e] border border-[#24283b] group-hover:border-[#7aa2f7] transition-colors"
+                      className="w-12 h-12 rounded-xl object-cover bg-[#16161e] border border-[#24283b] group-hover:border-[#7aa2f7] transition-colors shrink-0"
                     />
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-white group-hover:text-[#7aa2f7] transition-colors line-clamp-1">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-white group-hover:text-[#7aa2f7] transition-colors truncate">
                         {product.title}
                       </h4>
-                      <span className="text-xs text-[#9ece6a] font-bold">
-                        ${product.price}
-                      </span>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-[#9ece6a] font-bold">
+                          {product.price} ₾
+                        </span>
+                        <span className="text-[10px] text-[#565f89] px-1.5 py-0.5 rounded bg-[#16161e] border border-[#24283b]">
+                          {product.category}
+                        </span>
+                      </div>
                     </div>
                   </Link>
                 ))}

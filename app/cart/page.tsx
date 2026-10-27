@@ -123,7 +123,7 @@ export default function CartPage() {
                       {item.title}
                     </h3>
                     <span className="text-[#9ece6a] font-black text-lg">
-                      ${item.price}
+                      ₾{item.price}
                     </span>
                   </div>
                 </div>

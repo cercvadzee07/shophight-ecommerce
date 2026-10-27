@@ -166,7 +166,7 @@ function ProductContent({ params }: { params: Promise<{ id: string }> }) {
               transition={{ duration: 0.25 }}
               className="text-4xl font-black drop-shadow-[0_0_15px_rgba(158,206,106,0.2)]"
             >
-              ${currentTotalPrice.toFixed(2)}
+              ₾{currentTotalPrice.toFixed(2)}
             </motion.div>
 
             {activePriceModifier > 0 && (

@@ -35,87 +35,97 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-[100] overflow-hidden">
+          {/* დაბინდული მუქი ფონი მთელ ეკრანზე */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-[#0f111a]/60 backdrop-blur-sm z-[60]"
+            className="fixed inset-0 bg-[#0f111a]/80 backdrop-blur-sm cursor-pointer"
           />
 
-          <motion.div
+          {/* გვერდითა სრული პანელი (ეკრანის თავიდან ბოლომდე) */}
+          <motion.aside
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-[#1f2335]/95 backdrop-blur-2xl border-l border-[#24283b] shadow-[-20px_0_40px_rgba(0,0,0,0.5)] z-[70] flex flex-col"
+            transition={{ type: "spring", damping: 25, stiffness: 220 }}
+            className="fixed top-0 right-0 bottom-0 h-screen w-full sm:w-[440px] bg-[#16161e] border-l border-[#24283b] shadow-[-25px_0_50px_rgba(0,0,0,0.8)] flex flex-col z-[101]"
           >
-            <div className="px-6 py-6 border-b border-[#24283b] flex items-center justify-between bg-[#1a1b26]/50">
+            {/* 1. ზედა ჰედერი (არ იკუმშება - shrink-0) */}
+            <div className="h-20 px-6 border-b border-[#24283b] flex items-center justify-between bg-[#1a1b26] shrink-0">
               <div className="flex items-center gap-3">
-                <ShoppingBag className="text-[#7aa2f7]" size={24} />
-                <h2 className="text-xl font-bold text-white">
-                  {lang === "ka" ? "ჩემი კალათა" : "My Cart"}
-                </h2>
-                <span className="bg-[#7aa2f7]/20 text-[#7aa2f7] text-xs font-extrabold px-3 py-1 rounded-full">
-                  {totalItemCount}
-                </span>
+                <div className="p-2 bg-[#7aa2f7]/10 text-[#7aa2f7] rounded-xl border border-[#7aa2f7]/20">
+                  <ShoppingBag size={22} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-black text-white">
+                    {lang === "ka" ? "ჩემი კალათა" : "My Cart"}
+                  </h2>
+                  <span className="text-xs text-[#7aa2f7] font-semibold">
+                    {totalItemCount} {lang === "ka" ? "პროდუქტი" : "items"}
+                  </span>
+                </div>
               </div>
+
               <button
                 onClick={onClose}
                 className="p-2 text-[#a9b1d6] hover:text-[#f7768e] hover:bg-[#f7768e]/10 rounded-xl transition-all cursor-pointer"
               >
-                <X size={24} />
+                <X size={22} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#414868] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#7aa2f7]">
+            {/* 2. შუა ნაწილი: პროდუქტების სია (სქროლვადი და ყოველთვის ხილვადი) */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-3.5 bg-[#16161e] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-[#24283b] [&::-webkit-scrollbar-thumb]:rounded-full">
               {items.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-[#a9b1d6] gap-4">
-                  <ShoppingBag size={56} className="opacity-20 mb-2" />
-                  <p className="font-medium text-lg">
+                <div className="h-full flex flex-col items-center justify-center text-center p-6 text-[#a9b1d6] gap-3">
+                  <ShoppingBag
+                    size={56}
+                    className="text-[#24283b] stroke-[1.5]"
+                  />
+                  <p className="font-bold text-white text-base">
                     {lang === "ka" ? "კალათა ცარიელია" : "Your cart is empty"}
                   </p>
-                  <button
-                    onClick={onClose}
-                    className="mt-2 text-[#7aa2f7] hover:underline text-sm cursor-pointer"
-                  >
-                    {lang === "ka" ? "განაგრძეთ შოპინგი" : "Continue Shopping"}
-                  </button>
+                  <p className="text-xs text-[#565f89]">
+                    {lang === "ka"
+                      ? "დაამატეთ სასურველი ნივთები კატალოგიდან"
+                      : "Add items from the store to see them here"}
+                  </p>
                 </div>
               ) : (
                 items.map((item: any) => {
                   const qty = item.quantity || 1;
                   return (
-                    <motion.div
-                      layout
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
+                    <div
                       key={item.id}
-                      className="flex gap-4 bg-[#1a1b26] border border-[#24283b] p-3 rounded-2xl hover:border-[#414868] transition-colors group"
+                      className="flex gap-3.5 bg-[#1a1b26] border border-[#24283b] p-3 rounded-2xl hover:border-[#414868] transition-colors"
                     >
                       <img
                         src={item.image}
                         alt={item.title}
-                        className="w-20 h-20 object-cover rounded-xl bg-[#16161e] shrink-0"
+                        className="w-20 h-20 object-cover rounded-xl bg-[#0f111a] border border-[#24283b] shrink-0"
                       />
-                      <div className="flex-1 flex flex-col justify-between py-0.5 min-w-0">
+
+                      <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                         <div>
-                          <h4 className="text-sm font-bold text-white truncate group-hover:text-[#7aa2f7] transition-colors">
+                          <h4 className="text-xs sm:text-sm font-bold text-white truncate">
                             {item.title}
                           </h4>
-                          <span className="text-[#9ece6a] font-black text-sm block mt-1">
-                            ${(item.price * qty).toFixed(2)}
+                          <span className="text-sm font-black text-[#9ece6a] block mt-1">
+                            ₾{(item.price * qty).toFixed(2)}
                           </span>
                         </div>
 
                         <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#24283b]/60">
-                          <div className="flex items-center gap-1.5 bg-[#1f2335] border border-[#24283b] rounded-lg p-0.5">
+                          {/* რაოდენობის კონტროლი */}
+                          <div className="flex items-center gap-1.5 bg-[#16161e] border border-[#24283b] rounded-lg p-0.5">
                             <button
                               onClick={() => updateQuantity(item.id, qty - 1)}
                               className="w-6 h-6 flex items-center justify-center text-[#a9b1d6] hover:text-white rounded hover:bg-[#24283b] transition-colors cursor-pointer"
                             >
-                              <Minus size={13} />
+                              <Minus size={12} />
                             </button>
                             <span className="text-white text-xs font-bold px-1.5 min-w-[1.2rem] text-center">
                               {qty}
@@ -124,49 +134,54 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                               onClick={() => updateQuantity(item.id, qty + 1)}
                               className="w-6 h-6 flex items-center justify-center text-[#a9b1d6] hover:text-white rounded hover:bg-[#24283b] transition-colors cursor-pointer"
                             >
-                              <Plus size={13} />
+                              <Plus size={12} />
                             </button>
                           </div>
 
+                          {/* წაშლა */}
                           <button
                             onClick={() => removeItem(item.id)}
-                            className="text-[#414868] hover:text-[#f7768e] bg-[#1f2335] p-1.5 rounded-lg transition-colors border border-[#24283b] hover:border-[#f7768e]/40 cursor-pointer"
+                            className="text-[#565f89] hover:text-[#f7768e] p-1.5 rounded-lg hover:bg-[#f7768e]/10 transition-colors cursor-pointer"
                             title={lang === "ka" ? "წაშლა" : "Remove"}
                           >
-                            <Trash2 size={15} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })
               )}
             </div>
 
+            {/* 3. ქვედა ნაწილი: ჯამი და შეკვეთა (არ იკუმშება - shrink-0) */}
             {items.length > 0 && (
-              <div className="p-6 border-t border-[#24283b] bg-[#1a1b26]">
-                <div className="flex items-center justify-between mb-6 bg-[#1f2335] p-4 rounded-xl border border-[#24283b]">
-                  <span className="text-[#a9b1d6] font-medium uppercase text-sm tracking-wider">
+              <div className="p-5 border-t border-[#24283b] bg-[#1a1b26] shrink-0 space-y-4">
+                <div className="flex items-center justify-between bg-[#16161e] p-3.5 rounded-xl border border-[#24283b]">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#a9b1d6]">
                     {lang === "ka" ? "სულ ჯამი:" : "Subtotal:"}
                   </span>
-                  <span className="text-3xl font-black text-[#9ece6a] drop-shadow-[0_0_10px_rgba(158,206,106,0.2)]">
+                  <span className="text-2xl font-black text-[#9ece6a] drop-shadow-[0_0_12px_rgba(158,206,106,0.3)]">
                     ${total.toFixed(2)}
                   </span>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   <Link
                     href="/checkout"
                     onClick={onClose}
-                    className="w-full py-4 bg-[#7aa2f7] text-[#1a1b26] rounded-xl font-black flex items-center justify-center gap-2 transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(122,162,247,0.4)]"
+                    className="w-full py-3.5 bg-gradient-to-r from-[#7aa2f7] to-[#bb9af7] text-[#1a1b26] rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(122,162,247,0.3)] hover:scale-[1.01] transition-transform"
                   >
-                    {lang === "ka" ? "ყიდვა" : "Checkout"}{" "}
-                    <ArrowRight size={20} />
+                    <span>
+                      {lang === "ka" ? "შეკვეთის გაფორმება" : "Checkout"}
+                    </span>
+                    <ArrowRight size={18} />
                   </Link>
+
                   <Link
                     href="/cart"
                     onClick={onClose}
-                    className="w-full py-4 border border-[#414868] text-[#a9b1d6] rounded-xl font-bold flex items-center justify-center transition-all hover:bg-[#24283b] hover:text-white"
+                    className="w-full py-3 border border-[#24283b] hover:border-[#414868] text-[#a9b1d6] hover:text-white rounded-xl font-bold text-xs flex items-center justify-center transition-colors bg-[#16161e]/50"
                   >
                     {lang === "ka"
                       ? "კალათის დეტალურად ნახვა"
@@ -175,8 +190,8 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                 </div>
               </div>
             )}
-          </motion.div>
-        </>
+          </motion.aside>
+        </div>
       )}
     </AnimatePresence>
   );
